@@ -18,9 +18,9 @@ function errorHandler() {
     Promise
       .resolve(async (error, request, response) => {
         console.error(error);
-        response.status(parseInt(err.code, 10));
+        response.status(parseInt(err.code, 10) || 500);
         response.json({
-          error: err.message,
+          error: err.message || 'Unknown Error',
         });
       })
       .catch(next);
