@@ -8,7 +8,7 @@
         Home
       </router-link>
       <router-link
-        v-if="$auth.isAuthenticated"
+        v-if="$auth.isAuthenticated && $auth.isAdmin"
         to="/about"
       >
         About

@@ -1,5 +1,8 @@
 const express = require('express');
 const process = require('process');
+const jwt = require('express-jwt');
+const jwksRsa = require('jwks-rsa');
+const cors = require('cors');
 const http = require('http');
 const config = require('./config');
 
@@ -27,13 +30,46 @@ function errorHandler() {
   };
 }
 
+const checkJwt = jwt({
+  secret: jwksRsa.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: `https://${config.AUTH_DOMAIN}/.well-known/jwks.json`,
+  }),
+
+  audience: config.AUTH_AUDIENCE,
+  issuer: `https://${config.AUTH_DOMAIN}/`,
+  algorithms: ['RS256'],
+});
+
+const checkAdmin = (req, res, next) => {
+  console.info(JSON.stringify(req.user));
+  if (!req.user.permissions.includes('admin')) return res.sendStatus(401);
+  next();
+};
+
 async function run() {
+  app.use(cors());
+
+  app.use(checkJwt);
+  // user endpoints (jwt validation only)
   app.get('/', asyncHandler(async (req, res) => {
     res.json({
       woot: 'woot',
     });
   }));
 
+  // admin endpoints
+  app.use(checkAdmin);
+
+  app.get('/admin', asyncHandler(async (req, res) => {
+    res.json({
+      wootAdmin: 'wootAdmin',
+    });
+  }));
+
+  // for thrown errors
   app.use(errorHandler);
 
   const server = http.Server(app).listen(config.LISTEN_PORT, '0.0.0.0', () => {

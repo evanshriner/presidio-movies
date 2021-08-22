@@ -1,3 +1,9 @@
+/*
+this file was mostly lifted from
+https://auth0.com/docs/quickstart/spa/vuejs#secure-the-profile-page
+and edited to conform to the code styling i am using.
+*/
+
 import Vue from 'vue';
 import createAuth0Client from '@auth0/auth0-spa-js';
 
@@ -24,6 +30,7 @@ export const useAuth0 = ({
       return {
         loading: true,
         isAuthenticated: false,
+        isAdmin: false,
         user: {},
         auth0Client: null,
         popupOpen: false,
@@ -60,6 +67,10 @@ export const useAuth0 = ({
         // Initialize our internal authentication state
         this.isAuthenticated = await this.auth0Client.isAuthenticated();
         this.user = await this.auth0Client.getUser();
+        // yes, this is literally awful,
+        // but was unable to augment the id token claims with the alloted time and spent 2
+        // hours bashing my head against a very thick glass wall : --- (
+        this.isAdmin = this.user && (this.user.email === 'evan.shriner@gmail.com');
         this.loading = false;
       }
     },
@@ -72,6 +83,8 @@ export const useAuth0 = ({
           await this.auth0Client.loginWithPopup(opt, config);
           this.user = await this.auth0Client.getUser();
           this.isAuthenticated = await this.auth0Client.isAuthenticated();
+          // same thing here
+          this.isAdmin = this.user && (this.user.email === 'evan.shriner@gmail.com');
           this.error = null;
         } catch (e) {
           this.error = e;
@@ -90,6 +103,7 @@ export const useAuth0 = ({
         try {
           await this.auth0Client.handleRedirectCallback();
           this.user = await this.auth0Client.getUser();
+          this.isAdmin = this.user && (this.user.email === 'evan.shriner@gmail.com');
           this.isAuthenticated = true;
           this.error = null;
         } catch (e) {
