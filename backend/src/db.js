@@ -18,6 +18,21 @@ class Db {
   async getMovies() {
     return this.sql.models.movie.findAll();
   }
+
+  async createMovie(record) {
+    console.info(
+      `adding movie ${JSON.stringify(record)}`,
+    );
+    return this.sql.models.movie.create(record);
+  }
+
+  async deleteMovie(id) {
+    return this.sql.models.movie.destroy({
+      where: {
+        id,
+      },
+    });
+  }
 }
 
 module.exports = Db;

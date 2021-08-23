@@ -53,17 +53,27 @@ const checkAdmin = (req, res, next) => {
 };
 
 async function run() {
+  app.use(express.json());
   app.use(cors());
 
   app.use(checkJwt);
   // user endpoints (jwt validation only)
-  app.get('/movies', asyncHandler(async (req, res) => {
+  app.get('/movie', asyncHandler(async (req, res) => {
     res.json(await requestHandler.getMovies());
   }));
 
   // admin endpoints
   app.use(checkAdmin);
 
+  app.post('/movie', asyncHandler(async (req, res) => {
+    res.json(await requestHandler.createMovie(req.body));
+  }));
+
+  app.delete('/movie/:id', asyncHandler(async (req, res) => {
+    res.json(await requestHandler.deleteMovie(req.params.id));
+  }));
+
+  // test endpoint
   app.get('/admin', asyncHandler(async (req, res) => {
     res.json({
       wootAdmin: 'wootAdmin',

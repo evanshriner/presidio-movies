@@ -11,11 +11,11 @@ docker-compose up
 
 ```
 
-Then, head over to `localhost:8080` in the browser of your choice and log in
+Then, head over to `localhost:8080` in the browser of your choice (maybe not IE . . .) and log in
 
 
 #### Notable appearances
-- Vue.js
+- Vue.js + Vuetify
 - Express
-- Sqlite3
+- Sqlite3 + Sequelize
 - Auth0

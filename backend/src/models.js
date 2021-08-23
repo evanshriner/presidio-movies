@@ -12,8 +12,6 @@ const models = [
         type: DataTypes.TEXT,
       },
     },
-    createdAt: false,
-    updatedAt: false,
   },
   {
     modelName: 'movie',
@@ -44,8 +42,6 @@ const models = [
         type: DataTypes.TEXT,
       },
     },
-    createdAt: false,
-    updatedAt: false,
   },
 ];
 
