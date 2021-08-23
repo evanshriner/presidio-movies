@@ -3,24 +3,12 @@ class RequestHandler {
     this.db = db;
   }
 
-  async getMovies(email) {
-    const movies = await this.db.getMovies();
-    if (!email) {
-      return movies;
-    }
-    const ratings = await this.db.getRatings(email);
-    const returnArray = [];
-    movies.forEach((movie) => {
-      ratings.forEach((rating) => {
-        if (rating.movieId === movie.id) {
-          returnArray.push({
-            ...movie.get({ plain: true }),
-            rating: rating.value,
-          });
-        }
-      });
-    });
-    return returnArray;
+  async getMovies() {
+    return this.db.getMovies();
+  }
+
+  async getRatings(email) {
+    return this.db.getRatings(email);
   }
 
   async createMovie(record) {

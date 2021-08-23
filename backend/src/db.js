@@ -6,6 +6,7 @@ class Db {
     this.sql = new Sequelize({
       dialect: 'sqlite',
       storage: './movies.db',
+      query: { raw: true },
     });
 
     models.initalizeModels(this.sql);
@@ -54,7 +55,9 @@ class Db {
       movieId,
       userId: user.id,
       value,
-      id: rating.id,
+      ...(rating && {
+        id: rating.id,
+      }),
     });
   }
 

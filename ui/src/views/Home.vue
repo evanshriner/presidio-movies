@@ -132,21 +132,43 @@ export default {
   data() {
     return {
       movies: null,
+      ratings: null,
       inMenu: false,
       isMenu: false,
     };
   },
   async mounted() {
     const token = await this.$auth.getTokenSilently();
-    const { data } = await axios.get(`http://localhost:8000/movies/${this.$auth.user.email}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    this.movies = data;
+    this.ratings = (await this.getRatings(token)).data;
+    this.movies = (await this.getMovies(token)).data;
+    this.joinMovieRatings();
   },
 
   methods: {
+    joinMovieRatings() {
+      this.movies.forEach((movie) => {
+        this.ratings.forEach((rating) => {
+          if (rating.movieId === movie.id) {
+            // eslint-disable-next-line no-param-reassign
+            movie.rating = rating.value;
+          }
+        });
+      });
+    },
+    async getMovies(token) {
+      return axios.get('http://localhost:8000/movies', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    },
+    async getRatings(token) {
+      return axios.get(`http://localhost:8000/ratings/${this.$auth.user.email}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    },
     async deleteMovie(id) {
       const token = await this.$auth.getTokenSilently();
       await axios.delete(`http://localhost:8000/movies/${id}`, {
@@ -157,8 +179,6 @@ export default {
       this.movies = this.movies.filter((movie) => movie.id !== id);
     },
     async rateMovie(value, id) {
-      console.log('rating movie');
-      console.log(`${value} ${id}`);
       const token = await this.$auth.getTokenSilently();
       await axios.post(
         `http://localhost:8000/movies/${id}/rate`,

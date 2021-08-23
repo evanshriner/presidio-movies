@@ -101,7 +101,7 @@ export default {
     async submitMovie() {
       const token = await this.$auth.getTokenSilently();
       await axios.post(
-        'http://localhost:8000/movie',
+        'http://localhost:8000/movies',
         {
           ...this.form,
         },

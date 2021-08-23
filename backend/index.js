@@ -58,8 +58,12 @@ async function run() {
 
   app.use(checkJwt);
   // user endpoints (jwt validation only)
-  app.get('/movies/:email', asyncHandler(async (req, res) => {
-    res.json(await requestHandler.getMovies(req.params.email));
+  app.get('/movies', asyncHandler(async (req, res) => {
+    res.json(await requestHandler.getMovies());
+  }));
+
+  app.get('/ratings/:email', asyncHandler(async (req, res) => {
+    res.json(await requestHandler.getRatings(req.params.email));
   }));
 
   app.post('/movies/:id/rate', asyncHandler(async (req, res) => {
