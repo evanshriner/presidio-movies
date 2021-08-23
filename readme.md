@@ -3,8 +3,6 @@ presidio-movies
 
 the ultimate half finished movie rating system
 
-
-
 ## How to view
 
 Use `docker-compose` to build and start up the backend and ui containers:
