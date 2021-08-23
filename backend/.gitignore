@@ -1,6 +1,9 @@
 .DS_Store
 node_modules
-/dist
+
+#build files
+/static/SPA
+/templates/SPA
 
 # local env files
 .env.local

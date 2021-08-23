@@ -87,7 +87,7 @@ async function run() {
 if (require.main === module) {
   (async () => {
     try {
-      // ensure connection to db prior to starting server
+      // ensure connection to db prior to starting
       await db.authenticate();
       await run();
     } catch (e) {
