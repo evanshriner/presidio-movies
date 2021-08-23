@@ -5,7 +5,11 @@ const jwksRsa = require('jwks-rsa');
 const cors = require('cors');
 const http = require('http');
 const config = require('./config');
+const Db = require('./src/db');
+const RequestHandler = require('./src/requestHandler');
 
+const db = new Db();
+const requestHandler = new RequestHandler(db);
 const app = express();
 
 function asyncHandler(fn) {
@@ -44,7 +48,6 @@ const checkJwt = jwt({
 });
 
 const checkAdmin = (req, res, next) => {
-  console.info(JSON.stringify(req.user));
   if (!req.user.permissions.includes('admin')) return res.sendStatus(401);
   next();
 };
@@ -54,10 +57,8 @@ async function run() {
 
   app.use(checkJwt);
   // user endpoints (jwt validation only)
-  app.get('/', asyncHandler(async (req, res) => {
-    res.json({
-      woot: 'woot',
-    });
+  app.get('/movies', asyncHandler(async (req, res) => {
+    res.json(await requestHandler.getMovies());
   }));
 
   // admin endpoints
@@ -86,6 +87,8 @@ async function run() {
 if (require.main === module) {
   (async () => {
     try {
+      // ensure connection to db prior to starting server
+      await db.authenticate();
       await run();
     } catch (e) {
       console.error(e);

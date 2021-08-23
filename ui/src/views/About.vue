@@ -20,7 +20,7 @@ export default ({
     async callApi() {
       const token = await this.$auth.getTokenSilently();
       // Use Axios to make a call to the API
-      const { data } = await axios.get('http://localhost:8000/admin', {
+      const { data } = await axios.get('http://localhost:8000/movies', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
