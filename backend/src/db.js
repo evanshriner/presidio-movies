@@ -33,7 +33,6 @@ class Db {
   }
 
   async createUser(record) {
-    console.log(`this is the record ${JSON.stringify(record)}`);
     const user = await this.sql.models.user.findOne({
       where: {
         email: record.email,

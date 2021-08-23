@@ -17,7 +17,6 @@ class RequestHandler {
 
   async createUser(record) {
     const user = await this.db.createUser(record);
-    console.log(`returning user ${JSON.stringify(user)}`);
     return user;
   }
 
