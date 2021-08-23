@@ -58,18 +58,22 @@ async function run() {
 
   app.use(checkJwt);
   // user endpoints (jwt validation only)
-  app.get('/movie', asyncHandler(async (req, res) => {
-    res.json(await requestHandler.getMovies());
+  app.get('/movies/:email', asyncHandler(async (req, res) => {
+    res.json(await requestHandler.getMovies(req.params.email));
+  }));
+
+  app.post('/movies/:id/rate', asyncHandler(async (req, res) => {
+    res.json(await requestHandler.rateMovie(req.params.id, req.body));
   }));
 
   // admin endpoints
   app.use(checkAdmin);
 
-  app.post('/movie', asyncHandler(async (req, res) => {
+  app.post('/movies', asyncHandler(async (req, res) => {
     res.json(await requestHandler.createMovie(req.body));
   }));
 
-  app.delete('/movie/:id', asyncHandler(async (req, res) => {
+  app.delete('/movies/:id', asyncHandler(async (req, res) => {
     res.json(await requestHandler.deleteMovie(req.params.id));
   }));
 

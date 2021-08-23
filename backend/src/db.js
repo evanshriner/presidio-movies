@@ -15,15 +15,47 @@ class Db {
     await this.sql.authenticate();
   }
 
+  async getUserByEmail(email) {
+    return (await this.sql.models.user.findAll({
+      where: {
+        email,
+      },
+    }))[0];
+  }
+
   async getMovies() {
     return this.sql.models.movie.findAll();
   }
 
+  async getRatings(email) {
+    const user = await this.getUserByEmail(email);
+    return this.sql.models.rating.findAll({
+      where: {
+        userId: user.id,
+      },
+    });
+  }
+
   async createMovie(record) {
-    console.info(
-      `adding movie ${JSON.stringify(record)}`,
-    );
     return this.sql.models.movie.create(record);
+  }
+
+  async createRating(movieId, email, value) {
+    const user = await this.getUserByEmail(email);
+
+    const rating = (await this.sql.models.rating.findAll({
+      where: {
+        movieId,
+        userId: user.id,
+      },
+    }))[0];
+
+    await this.sql.models.rating.upsert({
+      movieId,
+      userId: user.id,
+      value,
+      id: rating.id,
+    });
   }
 
   async deleteMovie(id) {

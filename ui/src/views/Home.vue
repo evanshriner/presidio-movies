@@ -55,15 +55,15 @@
                   <v-card-text>
                     <span class="italic">Release Date: {{ movie.release_date }}</span>
                   </v-card-text>
-                  <v-rating
-                    empty-icon="$mdiStarOutline"
-                    full-icon="$mdiStar"
-                    half-icon="$mdiStarHalfFull"
-                    hover
-                    length="5"
-                    size="33"
-                    value=3
-                  />
+                  <v-card-text class="items-center">
+                    <star-rating
+                      :rating="movie.rating"
+                      increment="0.5"
+                      star-size="30"
+                      glow="3"
+                      @rating-selected="rateMovie($event, movie.id)"
+                    />
+                  </v-card-text>
                   <v-card-actions>
                     <v-spacer />
 
@@ -122,10 +122,12 @@
 
 <script>
 import axios from 'axios';
+import StarRating from 'vue-star-rating';
 
 export default {
   name: 'Home',
   components: {
+    StarRating,
   },
   data() {
     return {
@@ -134,26 +136,43 @@ export default {
       isMenu: false,
     };
   },
-  async created() {
+  async mounted() {
     const token = await this.$auth.getTokenSilently();
-    const { data } = await axios.get('http://localhost:8000/movie', {
+    const { data } = await axios.get(`http://localhost:8000/movies/${this.$auth.user.email}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-
     this.movies = data;
   },
 
   methods: {
     async deleteMovie(id) {
       const token = await this.$auth.getTokenSilently();
-      await axios.delete(`http://localhost:8000/movie/${id}`, {
+      await axios.delete(`http://localhost:8000/movies/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       this.movies = this.movies.filter((movie) => movie.id !== id);
+    },
+    async rateMovie(value, id) {
+      console.log('rating movie');
+      console.log(`${value} ${id}`);
+      const token = await this.$auth.getTokenSilently();
+      await axios.post(
+        `http://localhost:8000/movies/${id}/rate`,
+        {
+          email: this.$auth.user.email,
+          value,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
     },
     addMovie() {
       this.$router.push({ name: 'Add' });

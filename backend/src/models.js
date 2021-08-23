@@ -14,6 +14,24 @@ const models = [
     },
   },
   {
+    modelName: 'rating',
+    attributes: {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+      },
+      userId: {
+        type: DataTypes.INTEGER,
+      },
+      movieId: {
+        type: DataTypes.INTEGER,
+      },
+      value: {
+        type: DataTypes.REAL,
+      },
+    },
+  },
+  {
     modelName: 'movie',
     attributes: {
       id: {
