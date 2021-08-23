@@ -62,8 +62,12 @@ async function run() {
     res.json(await requestHandler.getMovies());
   }));
 
-  app.get('/ratings/:email', asyncHandler(async (req, res) => {
-    res.json(await requestHandler.getRatings(req.params.email));
+  app.post('/users', asyncHandler(async (req, res) => {
+    res.json(await requestHandler.createUser(req.body));
+  }));
+
+  app.get('/ratings/:userId', asyncHandler(async (req, res) => {
+    res.json(await requestHandler.getRatings(req.params.userId));
   }));
 
   app.post('/movies/:id/rate', asyncHandler(async (req, res) => {

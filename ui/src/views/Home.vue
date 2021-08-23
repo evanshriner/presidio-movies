@@ -123,6 +123,7 @@
 <script>
 import axios from 'axios';
 import StarRating from 'vue-star-rating';
+import config from '../app.config';
 
 export default {
   name: 'Home',
@@ -133,14 +134,15 @@ export default {
     return {
       movies: null,
       ratings: null,
+      user: null,
       inMenu: false,
       isMenu: false,
     };
   },
   async mounted() {
-    const token = await this.$auth.getTokenSilently();
-    this.ratings = (await this.getRatings(token)).data;
-    this.movies = (await this.getMovies(token)).data;
+    this.user = await this.refreshUser();
+    this.ratings = await this.getRatings();
+    this.movies = await this.getMovies();
     this.joinMovieRatings();
   },
 
@@ -155,23 +157,20 @@ export default {
         });
       });
     },
-    async getMovies(token) {
-      return axios.get('http://localhost:8000/movies', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    async getMovies() {
+      return (await this.get(`${config.SERVER_HOST}/movies`)).data;
     },
-    async getRatings(token) {
-      return axios.get(`http://localhost:8000/ratings/${this.$auth.user.email}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    async refreshUser() {
+      return (await this.post(`${config.SERVER_HOST}/users`, {
+        email: this.$auth.user.email,
+      })).data;
+    },
+    async getRatings() {
+      return (await this.get(`${config.SERVER_HOST}/ratings/${this.user.id}`)).data;
     },
     async deleteMovie(id) {
       const token = await this.$auth.getTokenSilently();
-      await axios.delete(`http://localhost:8000/movies/${id}`, {
+      await axios.delete(`${config.SERVER_HOST}/movies/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -179,13 +178,27 @@ export default {
       this.movies = this.movies.filter((movie) => movie.id !== id);
     },
     async rateMovie(value, id) {
-      const token = await this.$auth.getTokenSilently();
-      await axios.post(
-        `http://localhost:8000/movies/${id}/rate`,
+      await this.post(
+        `${config.SERVER_HOST}/movies/${id}/rate`,
         {
-          email: this.$auth.user.email,
+          userId: this.user.id,
           value,
         },
+      );
+    },
+    async get(url) {
+      const token = await this.$auth.getTokenSilently();
+      return axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    },
+    async post(url, body) {
+      const token = await this.$auth.getTokenSilently();
+      return axios.post(
+        url,
+        body,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -197,6 +210,7 @@ export default {
     addMovie() {
       this.$router.push({ name: 'Add' });
     },
+
   },
 };
 </script>

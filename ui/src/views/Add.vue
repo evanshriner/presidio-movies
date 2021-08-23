@@ -63,6 +63,7 @@
 
 <script>
 import axios from 'axios';
+import config from '../app.config';
 
 export default {
   name: 'Add',
@@ -101,7 +102,7 @@ export default {
     async submitMovie() {
       const token = await this.$auth.getTokenSilently();
       await axios.post(
-        'http://localhost:8000/movies',
+        `${config.SERVER_HOST}/movies`,
         {
           ...this.form,
         },

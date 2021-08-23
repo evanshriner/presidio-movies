@@ -10,6 +10,7 @@ const models = [
       },
       email: {
         type: DataTypes.TEXT,
+        unique: true,
       },
     },
   },

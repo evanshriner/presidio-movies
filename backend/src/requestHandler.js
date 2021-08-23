@@ -7,20 +7,26 @@ class RequestHandler {
     return this.db.getMovies();
   }
 
-  async getRatings(email) {
-    return this.db.getRatings(email);
+  async getRatings(userId) {
+    return this.db.getRatings(userId);
   }
 
   async createMovie(record) {
     return this.db.createMovie(record);
   }
 
+  async createUser(record) {
+    const user = await this.db.createUser(record);
+    console.log(`returning user ${JSON.stringify(user)}`);
+    return user;
+  }
+
   async rateMovie(movieId, record) {
     const {
-      email,
+      userId,
       value,
     } = record;
-    return this.db.createRating(movieId, email, value);
+    return this.db.createRating(movieId, userId, value);
   }
 
   async deleteMovie(id) {

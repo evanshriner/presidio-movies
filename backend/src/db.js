@@ -16,23 +16,14 @@ class Db {
     await this.sql.authenticate();
   }
 
-  async getUserByEmail(email) {
-    return (await this.sql.models.user.findAll({
-      where: {
-        email,
-      },
-    }))[0];
-  }
-
   async getMovies() {
     return this.sql.models.movie.findAll();
   }
 
-  async getRatings(email) {
-    const user = await this.getUserByEmail(email);
+  async getRatings(userId) {
     return this.sql.models.rating.findAll({
       where: {
-        userId: user.id,
+        userId,
       },
     });
   }
@@ -41,19 +32,32 @@ class Db {
     return this.sql.models.movie.create(record);
   }
 
-  async createRating(movieId, email, value) {
-    const user = await this.getUserByEmail(email);
+  async createUser(record) {
+    console.log(`this is the record ${JSON.stringify(record)}`);
+    const user = await this.sql.models.user.findOne({
+      where: {
+        email: record.email,
+      },
+    });
+    if (!user) {
+      return this.sql.models.user.create(record, {
+        returning: true,
+      });
+    }
+    return user;
+  }
 
+  async createRating(movieId, userId, value) {
     const rating = (await this.sql.models.rating.findAll({
       where: {
         movieId,
-        userId: user.id,
+        userId,
       },
     }))[0];
 
     await this.sql.models.rating.upsert({
       movieId,
-      userId: user.id,
+      userId,
       value,
       ...(rating && {
         id: rating.id,
